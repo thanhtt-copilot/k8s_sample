@@ -22,6 +22,8 @@ kubectl replace -f nginx.yaml
 # apply new change in definition if want completely delete and recreate objects
 kubectl replace --force -f nginx.yaml
 
+# get all object with filter by label
+kubectl get all --selector env=prod,bu=finance,tier=frontend
 
 ### ReplicaSet #####
 kubectl create -f /replicaset-definition.yaml
