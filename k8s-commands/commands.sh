@@ -145,3 +145,18 @@ kubectl config set-context $(kubectl config current-context) --namespace=dev
 kubectl get pods --all-namespaces
 
 
+##### NODE ##### 
+
+kubectl get nodes
+kubectl describe node controlplane
+
+#####  Taints& Tolerations
+
+kubectl describe node kubemaster | grep Taint
+
+# Create taint on node01
+kubectl taint nodes node01 spray=mortein:NoSchedule
+
+# Remove from node 'controlplane' the taint with key 'dedicated' and effect 'NoSchedule' if one exists
+kubectl taint node controlplane dedicated:NoSchedule-
+kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-
