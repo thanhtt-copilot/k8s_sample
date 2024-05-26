@@ -150,6 +150,9 @@ kubectl get pods --all-namespaces
 kubectl get nodes
 kubectl describe node controlplane
 
+# add label to node01
+kubectl label nodes node01 color=blue
+
 #####  Taints& Tolerations
 
 kubectl describe node kubemaster | grep Taint
