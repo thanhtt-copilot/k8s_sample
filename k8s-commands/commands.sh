@@ -25,6 +25,18 @@ kubectl replace --force -f nginx.yaml
 # get all object with filter by label
 kubectl get all --selector env=prod,bu=finance,tier=frontend
 
+# to edit pod(but you cannot edit the environment variables, service accounts, resource limits (all of which we will discuss later) of a running pod. )
+kubectl edit pod <pod name>
+=> 1. A copy of the file and saved in a temporary location
+kubectl get pod webapp -o yaml > my-new-pod.yaml
+2. Then make the changes to the exported file using an editor (vi editor). Save the changes
+vi my-new-pod.yaml
+3. Then delete the existing pod
+kubectl delete pod webapp
+4. Then create a new pod with the edited file
+kubectl create -f my-new-pod.yaml
+
+
 ### ReplicaSet #####
 kubectl create -f /replicaset-definition.yaml
 
