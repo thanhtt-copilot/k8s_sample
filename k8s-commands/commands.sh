@@ -175,3 +175,8 @@ kubectl taint nodes node01 spray=mortein:NoSchedule
 # Remove from node 'controlplane' the taint with key 'dedicated' and effect 'NoSchedule' if one exists
 kubectl taint node controlplane dedicated:NoSchedule-
 kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+
+###### rolling update/ roll backs
+
+k get deployments
+kubectl edit deployment frontend
