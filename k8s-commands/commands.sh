@@ -176,7 +176,28 @@ kubectl taint nodes node01 spray=mortein:NoSchedule
 kubectl taint node controlplane dedicated:NoSchedule-
 kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-
 
+<<<<<<< Updated upstream
 ###### rolling update/ roll backs
 
 k get deployments
 kubectl edit deployment frontend
+=======
+
+##### DaemonSets
+
+kubectl get daemonsets
+kubectl describe daemonsets monitoring-daemon
+
+# check across namespaces
+kubectl get daemonsets --all-namespaces
+
+# create daemonsets yaml from deployment and remove some unuse param.
+kubectl create deployment elasticsearch --image=registry.k8s.io/fluentd-elasticsearch:1.20 -n kube-system --dry-run=client -o yaml > fluentd.yaml
+
+
+#### static pods
+
+# check the directory holding the static pod definition files
+ps -aux | grep kubelet
+find: --config=/var/lib/kubelet/config.yaml
+>>>>>>> Stashed changes
