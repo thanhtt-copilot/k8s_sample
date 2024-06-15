@@ -201,3 +201,14 @@ kubectl create deployment elasticsearch --image=registry.k8s.io/fluentd-elastics
 ps -aux | grep kubelet
 find: --config=/var/lib/kubelet/config.yaml
 >>>>>>> Stashed changes
+
+##### drain/cordon
+
+# Gracefully terminates pods and marks the node unschedulable. (lưu ý, những pod không thuộc quản lý của replicaset sẽ không tự deploy sang node khác)
+k drain node01
+
+# Marks the node unschedulable without terminating pods.
+k cordon noed01
+
+# Marks the node schedulable again.
+k uncordon node01
