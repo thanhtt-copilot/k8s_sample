@@ -212,3 +212,65 @@ k cordon noed01
 
 # Marks the node schedulable again.
 k uncordon node01
+
+##### upgrade cluster
+
+# get current node version
+k get nodes
+
+# How many nodes can host workloads in this cluster? (Inspect the applications and taints set on the nodes.)
+k describe node <node_name>
+k get pods -o wide
+
+# How many applications are hosted on the cluster? (Count the number of deployments in the default namespace.)
+k get deployments
+
+# What is the latest version available for an upgrade with the current version of the kubeadm tool installed?
+kubeadm upgrade plan
+
+# On the controlplane node, upgrade kubeadm first. (do plan bước trên thấy chưa support ver 1.28 -> 1.29(mới có 1.28.11)
+vim /etc/apt/sources.list.d/kubernetes.list
+deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /
+root@controlplane:~# apt update
+root@controlplane:~# apt-cache madison kubeadm
+root@controlplane:~# apt-get install kubeadm=1.29.0-1.1
+
+# Recheck kubeadm upgrade plan v1.29.0 (khi cần nâng version to 1.29.0)
+kubeadm upgrade plan v1.29.0
+
+# upgrade the Kubernetes cluster
+kubeadm upgrade apply v1.29.0
+
+# upgrade the version and restart Kubelet. Also, mark the node (in this case, the "controlplane" node) as schedulable.
+root@controlplane:~# apt-get install kubelet=1.29.0-1.1
+root@controlplane:~# systemctl daemon-reload
+root@controlplane:~# systemctl restart kubelet
+root@controlplane:~# kubectl uncordon controlplane
+
+# next step is upgrade worker(Upgrade the worker node to the exact version v1.29.0)
+#Drain the worker node of the workloads and mark it UnSchedulable
+k cordon node01
+
+# ssh to node
+ssh node01
+
+# upgrade kubeadm
+vim /etc/apt/sources.list.d/kubernetes.list
+deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /
+root@node01:~# apt update
+root@node01:~# apt-cache madison kubeadm
+root@node01:~# apt-get install kubeadm=1.29.0-1.1
+
+# Upgrade the node 
+root@node01:~# kubeadm upgrade node
+
+# upgrade the version and restart Kubelet.
+root@node01:~# apt-get install kubelet=1.29.0-1.1
+root@node01:~# systemctl daemon-reload
+root@node01:~# systemctl restart kubelet
+
+# uncordon to SchedulingDisabled -> normal
+k uncordon node01
+
+
+
