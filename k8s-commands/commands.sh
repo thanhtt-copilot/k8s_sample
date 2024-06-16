@@ -273,6 +273,8 @@ root@node01:~# systemctl restart kubelet
 k uncordon node01
 
 ##### backup / Restore cluster #####
+https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
+
 # ssh to node controlplane(master node)
 ssh controlplane
 
