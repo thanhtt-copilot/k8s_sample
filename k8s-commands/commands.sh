@@ -165,7 +165,7 @@ kubectl describe node controlplane
 # add label to node01
 kubectl label nodes node01 color=blue
 
-#####  Taints& Tolerations
+#####  Taints& Tolerations #####
 
 kubectl describe node kubemaster | grep Taint
 
@@ -177,7 +177,7 @@ kubectl taint node controlplane dedicated:NoSchedule-
 kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-
 
 <<<<<<< Updated upstream
-###### rolling update/ roll backs
+###### rolling update/ roll backs #####
 
 k get deployments
 kubectl edit deployment frontend
@@ -200,9 +200,9 @@ kubectl create deployment elasticsearch --image=registry.k8s.io/fluentd-elastics
 # check the directory holding the static pod definition files
 ps -aux | grep kubelet
 find: --config=/var/lib/kubelet/config.yaml
->>>>>>> Stashed changes
 
-##### drain/cordon
+
+##### drain/cordon #####
 
 # Gracefully terminates pods and marks the node unschedulable. (lưu ý, những pod không thuộc quản lý của replicaset sẽ không tự deploy sang node khác)
 k drain node01
@@ -272,5 +272,81 @@ root@node01:~# systemctl restart kubelet
 # uncordon to SchedulingDisabled -> normal
 k uncordon node01
 
+##### backup / Restore cluster #####
+# ssh to node controlplane(master node)
+ssh controlplane
 
+# check how many deployments
+k get deployments
+
+# version of etcd running on the cluster
+C1. kubectl -n kube-system logs etcd-controlplane | grep -i 'etcd-version'
+C2. kubectl -n kube-system describe pod etcd-controlplane | grep Image:
+
+# Check address can you reach the ETCD cluster from the controlplane node
+kubectl -n kube-system describe pod etcd-controlplane | grep listen-client-urls
+
+# Check where is the ETCD server certificate file located
+kubectl -n kube-system describe pod etcd-controlplane | grep '\--cert-file'
+ouput: --cert-file=/etc/kubernetes/pki/etcd/server.crt
+
+# Check where is the ETCD CA Certificate file located?
+kubectl -n kube-system describe pod etcd-controlplane | grep '\--trusted-ca-file'
+
+# Take a snapshot of the ETCD database using the built-in snapshot functionality.
+
+ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+snapshot save /opt/snapshot-pre-boot.db
+
+# Restore the snapshot
+ETCDCTL_API=3 etcdctl  --data-dir /var/lib/etcd-from-backup \
+snapshot restore /opt/snapshot-pre-boot.db
+
+# Next, update the /etc/kubernetes/manifests/etcd.yaml:
+ volumes:
+  - hostPath:
+      path: /var/lib/etcd-from-backup
+      type: DirectoryOrCreate
+    name: etcd-data
+
+Note 1: As the ETCD pod has changed it will automatically restart, and also kube-controller-manager and kube-scheduler. Wait 1-2 to mins for this pods to restart. You can run the command: watch "crictl ps | grep etcd" to see when the ETCD pod is restarted.
+Note 2: If the etcd pod is not getting Ready 1/1, then restart it by kubectl delete pod -n kube-system etcd-controlplane and wait 1 minute.
+Note 3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You don't have to change anything else.
+
+# How many clusters are defined in the kubeconfig on the student-node
+kubectl config view
+OR: k config get-clusters
+
+# switch the context to cluster1 ( config cluster1 là context run kubectl)
+kubectl config use-context cluster1
+
+# check etcd pod
+kubectl get pods -n kube-system  | grep etcd
+
+# check static pod config(xem có config etcd ở đây không)
+ls /etc/kubernetes/manifests/ | grep -i etcd
+
+# Check process etcd
+ps -ef | grep etcd
+
+# Check etcd config by kube-apiserver
+k describe pod kube-apiserver -n kube-system | grep etcd
+
+# Check the members of the cluster etcd
+ETCDCTL_API=3 etcdctl \
+ --endpoints=https://127.0.0.1:2379 \
+ --cacert=/etc/etcd/pki/ca.pem \
+ --cert=/etc/etcd/pki/etcd.pem \
+ --key=/etc/etcd/pki/etcd-key.pem \
+  member list
+
+# inspect the endpoints and certificates used by the etcd pod
+kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep advertise-client-url
+kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep pki
+
+# SSH to the controlplane node of cluster1 and then take the backup using the endpoints and certificates we identified above
+ETCDCTL_API=3 etcdctl --endpoints=https://192.10.6.24:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /opt/cluster1.db
 
