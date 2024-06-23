@@ -352,3 +352,35 @@ kubectl describe  pods -n kube-system etcd-cluster1-controlplane  | grep pki
 # SSH to the controlplane node of cluster1 and then take the backup using the endpoints and certificates we identified above
 ETCDCTL_API=3 etcdctl --endpoints=https://192.10.6.24:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /opt/cluster1.db
 
+#### TLS Cert
+
+# Identify the certificate file used for the kube-api server.
+k describe pod -n kube-system kube-apiserver-controlplane | grep tls # --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+
+# Identify the Certificate file used to authenticate kube-apiserver as a client to ETCD Server.
+k describe pod -n kube-system kube-apiserver-controlplane | grep '\--etcd-certfile'
+
+# Identify the key used to authenticate kubeapi-server to the kubelet server.
+k describe pod -n kube-system kube-apiserver-controlplane | grep '\--kubelet-client-key'
+
+# Identify the ETCD Server Certificate used to host ETCD server.
+k describe pod -n kube-system etcd-controlplane | grep '\--cert-file' # /etc/kubernetes/pki/etcd/server.crt
+
+# Identify the ETCD Server CA Root Certificate used to serve ETCD Server
+k describe pod -n kube-system etcd-controlplane | grep '\--trusted-ca-file'
+
+# What is the Common Name (CN) configured on the Kube API Server Certificate?
+k describe pod kube-apiserver-controlplane -n kube-system | grep '\--tls-cert-file'
+openssl x509 -in file-path.crt -text -noout # Subject: CN = kube-apiserver # who issued cert: Issuer: CN = kubernetes
+
+# How long, from the issued date, is the Root CA Certificate valid for?
+k describe pod kube-apiserver-controlplane -n kube-system | grep cafile # --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
+openssl x509 -in /etc/kubernetes/pki/etcd/ca.crt -text -noout
+
+# The kube-api server stopped again! Check it out. Inspect the kube-api server logs and identify the root cause and fix the issue.
+Run crictl ps -a command to identify the kube-api server container. 
+Run crictl logs container-id command to view the logs.
+ Err: connection error: desc = "transport: authentication handshake failed: tls: failed to verify certificate: x509: certificate signed by unknown authority"
+ vi /etc/kubernetes/manifests/kube-apiserver.yaml => --etcd-cafile=/etc/kubernetes/pki/ca.crt => --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
+--etcd-cafile string                        SSL Certificate Authority file used to secure etcd communication. 
+--client-ca-file If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate.
