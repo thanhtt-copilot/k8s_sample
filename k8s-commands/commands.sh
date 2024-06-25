@@ -316,13 +316,15 @@ snapshot restore /opt/snapshot-pre-boot.db
 
 Note 1: As the ETCD pod has changed it will automatically restart, and also kube-controller-manager and kube-scheduler. Wait 1-2 to mins for this pods to restart. You can run the command: watch "crictl ps | grep etcd" to see when the ETCD pod is restarted.
 Note 2: If the etcd pod is not getting Ready 1/1, then restart it by kubectl delete pod -n kube-system etcd-controlplane and wait 1 minute.
-Note 3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You don't have to change anything else.
+Note 3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You dont have to change anything else.
 
 # How many clusters are defined in the kubeconfig on the student-node
+
 kubectl config view
 OR: k config get-clusters
 
 # switch the context to cluster1 ( config cluster1 là context run kubectl)
+
 kubectl config use-context cluster1
 
 # check etcd pod
