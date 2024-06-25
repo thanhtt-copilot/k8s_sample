@@ -386,3 +386,22 @@ Run crictl logs container-id command to view the logs.
  vi /etc/kubernetes/manifests/kube-apiserver.yaml => --etcd-cafile=/etc/kubernetes/pki/ca.crt => --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
 --etcd-cafile string                        SSL Certificate Authority file used to secure etcd communication. 
 --client-ca-file If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate.
+
+# Check status of CSR(CertificateSigningRequest)
+kubectl get csr
+
+# Approve the CSR Request
+kubectl certificate approve <name_csr>
+
+# Get details CSR request
+kubectl get csr <name_csr> -o yaml
+
+# deny CSR request
+kubectl certificate deny <name_csr>
+
+# delete csr
+kubectl delete csr agent-smith
+
+
+
+
