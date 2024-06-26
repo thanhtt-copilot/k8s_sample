@@ -402,6 +402,8 @@ kubectl certificate deny <name_csr>
 # delete csr
 kubectl delete csr agent-smith
 
+# To know the current context:
+kubectl config --kubeconfig=/root/my-kube-config current-context
 
-
-
+# Set the my-kube-config file as the default kubeconfig by overwriting the content of ~/.kube/config
+cp my-kube-config ~/.kube/config
