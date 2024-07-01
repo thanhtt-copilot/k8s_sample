@@ -405,3 +405,47 @@ kubectl config --kubeconfig=/root/my-kube-config current-context
 
 # Set the my-kube-config file as the default kubeconfig by overwriting the content of ~/.kube/config
 cp my-kube-config ~/.kube/config
+
+###### RBAC ######
+#Inspect the environment and identify the authorization modes configured on the cluster.
+controlplane ~ ➜  kubectl describe pod kube-apiserver-controlplane -n kube-system | grep '\--authorization-mode' # --authorization-mode=Node,RBAC
+
+# Get roles
+k get roles
+
+# Describe role
+kubectl describe role kube-proxy -n kube-system
+
+# Which account is the kube-proxy role assigned to?
+kubectl describe rolebinding kube-proxy -n kube-system
+
+# Run kubectl with specific user
+kubectl get pods --as dev-user
+
+# Create role
+kubectl create role developer --namespace=default --verb=list,create,delete --resource=pods
+
+# Create rolebinding(asign user to role)
+kubectl create rolebinding dev-user-binding --namespace=default --role=developer --user=dev-user
+
+# Edit role
+
+kubectl edit role developer -n blue
+
+######### Cluster role #########
+
+#how many cluster role
+k get clusterroles | wc -l # n-1
+
+# how many cluster role binding
+k get clusterrolebindings | wc -l
+
+# describe rolebinding
+kubectl describe clusterrolebinding cluster-admin
+
+# describe cluster role
+k describe clusterrole cluster-admin
+
+
+
+
