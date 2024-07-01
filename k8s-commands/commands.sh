@@ -160,7 +160,7 @@ kubectl get pods --all-namespaces
 ##### NODE ##### 
 
 kubectl get nodes
-kubectl describe node controlplane
+kubectl describe node control
 
 # add label to node01
 kubectl label nodes node01 color=blue
@@ -176,12 +176,10 @@ kubectl taint nodes node01 spray=mortein:NoSchedule
 kubectl taint node controlplane dedicated:NoSchedule-
 kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-
 
-<<<<<<< Updated upstream
 ###### rolling update/ roll backs #####
 
 k get deployments
 kubectl edit deployment frontend
-=======
 
 ##### DaemonSets
 
