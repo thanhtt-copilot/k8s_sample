@@ -446,6 +446,8 @@ kubectl describe clusterrolebinding cluster-admin
 # describe cluster role
 k describe clusterrole cluster-admin
 
+# Create a new ServiceAccount named dashboard-sa
+kubectl create serviceaccount dashboard-sa
 
 
 
