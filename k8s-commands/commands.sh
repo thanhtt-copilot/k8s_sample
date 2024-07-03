@@ -449,5 +449,8 @@ k describe clusterrole cluster-admin
 # Create a new ServiceAccount named dashboard-sa
 kubectl create serviceaccount dashboard-sa
 
+# Create docker-registry (secret object)
+k create secret docker-registry private-reg-cred --docker-server=myprivateregistry.com:5000 --docker-username=dock_user --docker-password=dock_password --docker-email=dock_user@myprivateregistry.com
+
 
 
