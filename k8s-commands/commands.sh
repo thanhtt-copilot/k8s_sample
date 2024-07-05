@@ -453,4 +453,8 @@ kubectl create serviceaccount dashboard-sa
 k create secret docker-registry private-reg-cred --docker-server=myprivateregistry.com:5000 --docker-username=dock_user --docker-password=dock_password --docker-email=dock_user@myprivateregistry.com
 
 
+#  Execute a command in a container
+## What is the user used to execute the sleep process within the ubuntu-sleeper pod?
+kubectl exec ubuntu-sleeper -- whoami
+
 
