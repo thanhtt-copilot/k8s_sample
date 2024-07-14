@@ -457,4 +457,16 @@ k create secret docker-registry private-reg-cred --docker-server=myprivateregist
 ## What is the user used to execute the sleep process within the ubuntu-sleeper pod?
 kubectl exec ubuntu-sleeper -- whoami
 
+# view logs file on pod
+## realy is run command on pod
+k exec webapp -- less /log/app.log
+
+# get storage classes
+k get sc
+
+# get persistent volume claim
+k get pvc
+
+# get persistent volume
+k get pv
 
