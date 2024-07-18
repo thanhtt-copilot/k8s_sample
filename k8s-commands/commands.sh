@@ -470,3 +470,15 @@ k get pvc
 # get persistent volume
 k get pv
 
+# What is the network interface configured for cluster connectivity on the controlplane node
+kubectl get nodes -o wide #to see the IP address assigned to the controlplane node
+ip a | grep -B2 192.23.97.3
+
+# What is the port the kube-scheduler is listening on in the controlplane node?
+netstat -nplt | grep scheduler
+
+# Notice that ETCD is listening on two ports. Which of these have more client connections established?
+Xem port nao dang duoc connect tu client vao nhieu nhat
+netstat -anp | grep etcd | grep 2380 | wc -l 
+netstat -anp | grep etcd | grep 2379 | wc -l 
+That's because 2379 is the port of ETCD to which all control plane components connect to. 2380 is only for etcd peer-to-peer connectivity.
