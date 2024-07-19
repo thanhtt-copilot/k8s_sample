@@ -481,4 +481,22 @@ netstat -nplt | grep scheduler
 Xem port nao dang duoc connect tu client vao nhieu nhat
 netstat -anp | grep etcd | grep 2380 | wc -l 
 netstat -anp | grep etcd | grep 2379 | wc -l 
-That's because 2379 is the port of ETCD to which all control plane components connect to. 2380 is only for etcd peer-to-peer connectivity.
+Thats because 2379 is the port of ETCD to which all control plane components connect to. 2380 is only for etcd peer-to-peer connectivity.
+
+# Inspect the kubelet service and identify the container runtime endpoint value is set for Kubernetes
+# unix:///var/run/containerd/containerd.sock
+ps -aux | grep kubelet | grep --color container-runtime-endpoint
+
+# What is the path configured with all binaries of CNI supported plugins?
+ls /opt/cni/bin
+
+# What is the CNI plugin configured to be used on this kubernetes cluster?
+ls /etc/cni/net.d/
+
+# What binary executable file will be run by kubelet after a container and its associated namespace are created?
+# "type": "flannel",
+cat /etc/cni/net.d/10-flannel.conflist
+
+
+
+
