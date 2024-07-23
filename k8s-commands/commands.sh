@@ -490,13 +490,25 @@ ps -aux | grep kubelet | grep --color container-runtime-endpoint
 # What is the path configured with all binaries of CNI supported plugins?
 ls /opt/cni/bin
 
-# What is the CNI plugin configured to be used on this kubernetes cluster?
-ls /etc/cni/net.d/
+# What is the CNI plugin configured to be used on this kubernetes cluster? (the Networking Solution used by this cluster)
+ls /etc/cni/net.d/ #10-weave.conflist
 
 # What binary executable file will be run by kubelet after a container and its associated namespace are created?
 # "type": "flannel",
 cat /etc/cni/net.d/10-flannel.conflist
 
+# How many weave agents/peers are deployed in this cluster?
+k get pods -n kube-system | grep weave
 
+# where did weave deployed
+k get pods -o wide -n kube-system | grep weave
 
+# Identify the name of the bridge network/interface created by weave on each node.
+ip link #weave
 
+#What is the POD IP address range configured by weave?
+ip addr show weave
+
+# What is the default gateway configured on the PODs scheduled on node01?
+# SSH to the node01 by running the command: ssh node01 and then run the ip route command and look at the weave line.
+10.244.0.0/16 dev weave proto kernel scope link src 10.244.192.0 
