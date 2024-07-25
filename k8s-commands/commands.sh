@@ -512,3 +512,18 @@ ip addr show weave
 # What is the default gateway configured on the PODs scheduled on node01?
 # SSH to the node01 by running the command: ssh node01 and then run the ip route command and look at the weave line.
 10.244.0.0/16 dev weave proto kernel scope link src 10.244.192.0 
+
+# What network range are the nodes in the cluster part of?
+ip addr # see eth0 interfaces
+
+# What is the range of IP addresses configured for PODs on this cluster?
+1. check network using which ? (weave?)
+k get pods -n kube-system
+2. check logs weave pod name, and look for ipalloc-range
+kubectl logs <weave-pod-name> weave -n kube-system
+
+# What is the IP Range configured for the services within the cluster?
+cat /etc/kubernetes/manifests/kube-apiserver.yaml   | grep cluster-ip-range
+
+# What type of proxy is the kube-proxy configured to use?
+k logs kube-proxy-b54bx -n kube-system # Ex: "Using iptables proxy"
