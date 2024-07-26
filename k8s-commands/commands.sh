@@ -527,3 +527,18 @@ cat /etc/kubernetes/manifests/kube-apiserver.yaml   | grep cluster-ip-range
 
 # What type of proxy is the kube-proxy configured to use?
 k logs kube-proxy-b54bx -n kube-system # Ex: "Using iptables proxy"
+
+# Identify the DNS solution implemented in this cluster.
+kubectl get pods -n kube-system | grep DNS
+
+# What is the name of the service created for accessing CoreDNS?
+k get services -n kube-system
+
+# Where is the configuration file located for configuring the CoreDNS service?
+k -n kube-system describe deployments.apps coredns | grep -A2 Args | grep Corefile
+
+# get config map
+kubectl get configmap -n kube-system
+
+# describe config map
+kubectl describe configmap coredns -n kube-system
